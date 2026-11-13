@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Formative Test Security Settings Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#004730; --gold:#C7940D; --red:#CF142B;
+  --bg:#F4F7F5; --surface:#FFFFFF; --sunk:#EAF0EC; --ink:#13241C; --muted:#56675E; --line:#D3DDD7;
+  --accent-text:#004730; --on-green:#FFFFFF; --gold-soft:#FBF3DF; --red-soft:#FCE9EB; --red-text:#A40F22;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1612; --surface:#14211B; --sunk:#1A2A23; --ink:#E6EEE9; --muted:#9CB1A6; --line:#2A3D34;
+    --accent-text:#6CC49C; --on-green:#FFFFFF; --gold-soft:#2C2510; --red-soft:#33161A; --red-text:#FF8A95;
+    --gold:#E0B23A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1612; --surface:#14211B; --sunk:#1A2A23; --ink:#E6EEE9; --muted:#9CB1A6; --line:#2A3D34;
+  --accent-text:#6CC49C; --on-green:#FFFFFF; --gold-soft:#2C2510; --red-soft:#33161A; --red-text:#FF8A95;
+  --gold:#E0B23A; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 Montserrat,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.topbar{height:6px;background:linear-gradient(90deg,var(--green) 0 70%,var(--gold) 70% 100%)}
+h1,h2{font-family:"Libre Caslon Text",Georgia,"Times New Roman",serif;font-weight:700;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,4.6vw,3.1rem);max-width:18ch;letter-spacing:-.01em}
+h2{font-size:clamp(1.5rem,2.8vw,2rem);margin-bottom:.4em}
+h3{font-size:1.05rem;font-weight:700;margin:0 0 .3em}
+p{margin:0 0 1em}
+a{color:var(--accent-text)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:4px}
+
+/* Hero */
+header.hero{padding:56px 0 36px}
+.hero .lede{font-size:1.1rem;max-width:62ch;color:var(--muted);margin-top:18px}
+.hero .callout{margin-top:26px;display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--gold);padding:16px 18px;border-radius:6px;max-width:780px}
+.callout svg{flex:none;margin-top:3px}
+.callout p{margin:0;font-size:.95rem}
+
+section{padding:40px 0;border-top:1px solid var(--line)}
+.section-intro{color:var(--muted);max-width:66ch}
+
+/* Finder */
+.finder{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:28px;margin-top:22px;align-items:start}
+.steps{display:flex;flex-direction:column;gap:12px}
+.answered{display:flex;justify-content:space-between;gap:12px;align-items:center;width:100%;text-align:left;background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer}
+.answered:hover{border-color:var(--accent-text)}
+.answered .q{font-size:.85rem;color:var(--muted);display:block}
+.answered .a{font-weight:600}
+.answered .chg{font-size:.8rem;color:var(--accent-text);font-weight:600;white-space:nowrap}
+.current{background:var(--surface);border:2px solid var(--green);border-radius:10px;padding:20px}
+:root[data-theme="dark"] .current{border-color:var(--accent-text)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .current{border-color:var(--accent-text)}}
+.current .q{font-size:1.15rem;font-weight:700;line-height:1.35;margin-bottom:14px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:block;width:100%;text-align:left;padding:12px 16px;border:1px solid var(--line);background:var(--bg);border-radius:8px;cursor:pointer;font-weight:600}
+.opt:hover{background:var(--green);color:var(--on-green);border-color:var(--green)}
+.restart{align-self:flex-start;background:none;border:none;color:var(--accent-text);font-weight:600;cursor:pointer;padding:4px 0;font-size:.9rem;text-decoration:underline}
+
+.result{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.result.empty{padding:28px;color:var(--muted);border-style:dashed;background:transparent}
+.result-head{background:var(--green);color:var(--on-green);padding:20px 24px}
+.result-head h3{font-family:"Libre Caslon Text",Georgia,serif;font-size:1.4rem;line-height:1.25;margin:0}
+.badge{display:inline-block;background:var(--gold);color:#1B1300;font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:999px;margin-bottom:8px}
+.result-body{padding:20px 24px 24px}
+.sublabel{font-size:.85rem;font-weight:700;color:var(--muted);margin:18px 0 8px}
+.sublabel:first-child{margin-top:0}
+
+.vis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.vis div{border-radius:8px;padding:10px 8px;text-align:center;font-size:.8rem;line-height:1.3;border:1px solid var(--line)}
+.vis .on{background:var(--gold-soft);border-color:var(--gold)}
+.vis .off{color:var(--muted)}
+.vis svg{display:block;margin:0 auto 4px}
+.vis b{display:block;font-size:.72rem;font-weight:600;margin-top:2px}
+
+.meter{display:flex;align-items:center;gap:12px}
+.bars{display:flex;gap:4px}
+.bars i{width:30px;height:10px;border-radius:2px;background:var(--line)}
+.bars i.f{background:var(--accent-text)}
+.meter span{font-weight:600;font-size:.9rem}
+
+.panel{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.panel-title{background:var(--sunk);padding:8px 14px;font-size:.8rem;font-weight:700;color:var(--muted);border-bottom:1px solid var(--line)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:11px 14px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:none}
+.row .lbl{font-weight:600;font-size:.92rem}
+.row .val{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--accent-text);border-radius:6px;padding:4px 10px;font-weight:700;font-size:.88rem;color:var(--accent-text);white-space:nowrap}
+.row .val::after{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px)}
+.row .val.na{border-style:dashed;border-color:var(--line);color:var(--muted);font-weight:500;font-style:italic}
+.row .val.na::after{display:none}
+.row .alt{display:block;font-size:.78rem;color:var(--muted);text-align:right;margin-top:3px;white-space:normal}
+.row .right{text-align:right}
+.notes{margin:0;padding-left:1.1em}
+.notes li{margin-bottom:.5em;font-size:.93rem}
+.warn{background:var(--red-soft);border-left:4px solid var(--red);padding:10px 14px;border-radius:4px;font-size:.9rem;margin-top:14px}
+.warn strong{color:var(--red-text)}
+.option-block{border:1px solid var(--line);border-radius:8px;padding:14px;margin-top:12px}
+.option-block h4{margin:0 0 6px;font-size:.98rem}
+.option-block ol{margin:6px 0 0;padding-left:1.3em;font-size:.92rem}
+.option-block li{margin-bottom:.35em}
+
+/* Test day */
+.protect{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:20px}
+.protect div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px}
+.protect h3{font-size:.98rem}
+.protect p{font-size:.9rem;color:var(--muted);margin:0}
+
+/* Timeline */
+.timeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:26px;counter-reset:ph}
+.phase{position:relative;padding:0 18px 0 0}
+.phase .dot{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.phase .dot b{flex:none;width:34px;height:34px;border-radius:50%;background:var(--green);color:var(--on-green);display:grid;place-items:center;font-size:.95rem}
+.phase .dot::after{content:"";flex:1;height:2px;background:var(--line)}
+.phase:last-child .dot::after{display:none}
+.phase h3{font-size:1rem}
+.phase ul{margin:0;padding-left:1.1em;font-size:.9rem}
+.phase li{margin-bottom:.4em}
+.phase .gone{color:var(--red-text);font-weight:600}
+
+/* Table */
+.tablewrap{overflow-x:auto;margin-top:20px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:820px;font-size:.9rem}
+th,td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{background:var(--green);color:var(--on-green);font-weight:600;font-size:.85rem}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--sunk)}
+tbody tr:last-child td{border-bottom:none}
+td.scn{font-weight:700;min-width:200px}
+td .sm{display:block;font-weight:400;font-size:.8rem;color:var(--muted)}
+td.yes{color:var(--red-text);font-weight:600}
+td.no{color:var(--accent-text);font-weight:600}
+.tbl-note{font-size:.85rem;color:var(--muted);margin-top:10px}
+
+/* Myths */
+.myths{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-top:22px}
+.myth{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.myth .m{display:flex;gap:10px;align-items:flex-start;font-weight:700;margin-bottom:10px}
+.myth .m s{text-decoration-color:var(--red);text-decoration-thickness:2px}
+.myth .tag{flex:none;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:4px;margin-top:3px}
+.tag.myth-t{background:var(--red-soft);color:var(--red-text)}
+.tag.fact-t{background:var(--gold-soft);color:var(--ink);border:1px solid var(--gold)}
+.myth .f{display:flex;gap:10px;align-items:flex-start;font-size:.93rem}
+
+/* Playbook */
+.playbook{list-style:none;padding:0;margin:22px 0 0;counter-reset:pb;max-width:760px}
+.playbook li{counter-increment:pb;position:relative;padding:0 0 18px 52px}
+.playbook li::before{content:counter(pb);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;border:2px solid var(--green);color:var(--accent-text);font-weight:700;display:grid;place-items:center}
+:root[data-theme="dark"] .playbook li::before{border-color:var(--accent-text)}
+.playbook li::after{content:"";position:absolute;left:16px;top:38px;bottom:4px;width:2px;background:var(--line)}
+.playbook li:last-child::after{display:none}
+.playbook strong{display:block}
+.playbook span{font-size:.93rem;color:var(--muted)}
+
+footer{padding:36px 0 56px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+footer ul{padding-left:1.1em;margin:8px 0 14px}
+
+@media (max-width:860px){
+  .finder{grid-template-columns:1fr}
+  .timeline{grid-template-columns:1fr 1fr;row-gap:26px}
+}
+@media (max-width:520px){
+  .wrap{padding:0 16px}
+  .timeline{grid-template-columns:1fr}
+  .phase .dot::after{display:none}
+  .vis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .row{flex-direction:column;align-items:flex-start}
+  .row .right,.row .alt{text-align:left}
+}
+@media (prefers-reduced-motion:no-preference){
+  .result:not(.empty){animation:rise .25s ease-out}
+  @keyframes rise{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+@media print{
+  :root{--bg:#fff;--surface:#fff;--sunk:#f2f2f2}
+  .topbar,#finder,.restart{display:none}
+  section{padding:18px 0;break-inside:avoid-page}
+  .myth,.phase,.protect div{break-inside:avoid}
+  tbody tr{cursor:auto}
+  .tablewrap{overflow:visible}
+  table{min-width:0}
+  header.hero{padding:10px 0 16px}
+}
+</style>
+</head>
+<body>
+<div class="topbar" aria-hidden="true"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Which Formative settings keep my test secure?</h1>
+    <p class="lede">Answer two or three questions about what students should see after they submit, and get the exact assign settings to use. Below the finder: how the settings work together, a side‑by‑side table, and the misunderstandings that trip most of us up.</p>
+    <div class="callout">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5v.5"/></svg>
+      <p><strong>The one setting that decides whether students can get back in:</strong> <em>After submission</em>. The entry password and the Secure Exam Browser only protect the test while students are taking it. Once a student submits, <em>Keep visible</em> lets them reopen it from any device, anywhere. <em>Make hidden</em> locks it.</p>
+    </div>
+  </div>
+</header>
+
+<section id="finder">
+  <div class="wrap">
+    <h2>Find your settings</h2>
+    <p class="section-intro">Settings are chosen per class section in the Assign window (click the arrow next to the class name), and you can change them at any time.</p>
+    <div class="finder">
+      <div class="steps" id="steps" aria-live="polite"></div>
+      <div id="result" class="result empty" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How the settings stack up over a test’s life</h2>
+    <p class="section-intro">Each setting only works during one stage. Most confusion comes from expecting a test‑day setting to keep working after students submit.</p>
+    <div class="timeline">
+      <div class="phase">
+        <div class="dot"><b>1</b></div>
+        <h3>Before they start</h3>
+        <ul>
+          <li><strong>Entry password</strong> keeps students out until you give it to them (case sensitive).</li>
+          <li><strong>Schedule open/close times</strong> controls when the test is available.</li>
+          <li><strong>Assign to individual students</strong> controls who gets it at all.</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <div class="dot"><b>2</b></div>
+        <h3>While they take it</h3>
+        <ul>
+          <li><strong>Secure Exam Browser</strong> blocks other tabs, apps, printing and screen capture until they submit.</li>
+          <li><strong>Time limit</strong> and <strong>random question order</strong>.</li>
+          <li><strong>Return scores: Instantly</strong> turns on <em>Check answer</em> for auto‑graded questions during the test.</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <div class="dot"><b>3</b></div>
+        <h3>After they submit</h3>
+        <ul>
+          <li><strong>After submission</strong> decides whether they can reopen it.</li>
+          <li><strong>Return scores</strong> and <strong>Return correct answers</strong> decide what they see.</li>
+          <li class="gone">Entry password and Secure Exam Browser no longer apply.</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <div class="dot"><b>4</b></div>
+        <h3>After you close it</h3>
+        <ul>
+          <li>Closing only stops new responses.</li>
+          <li>If a score or answers are set to return, the test <strong>stays on</strong> student dashboards.</li>
+          <li>If nothing is set to return, it <strong>disappears</strong> from dashboards.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>All scenarios at a glance</h2>
+    <p class="section-intro">Select a row to see its details in the finder.</p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>What you want</th><th>After submission</th><th>Return scores</th><th>Return correct answers</th><th>Can students reopen the questions?</th><th>Security</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <p class="tbl-note">Where two timings are listed, use <em>When closed</em> if anyone still has to take the test (absences, accommodations, make‑ups) or you still have items to grade by hand.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Common misunderstandings</h2>
+    <div class="myths" id="myths"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Test‑day protections for any scenario</h2>
+    <p class="section-intro">These protect the test while students take it. None of them affect what students can see afterward.</p>
+    <div class="protect">
+      <div><h3>Entry password</h3><p>Prevents early peeking and someone logging in from home. Stops applying to each student once they submit.</p></div>
+      <div><h3>Secure Exam Browser</h3><p>Respondus LockDown Browser (our add‑on). Add a quit password for emergencies, and turn on auto‑pause after a swipe‑away attempt.</p></div>
+      <div><h3>Restrict to single device</h3><p>Available with LockDown Browser. Stops a second login on another device from taking the test for the student.</p></div>
+      <div><h3>Random order or versions</h3><p>Randomize question order, or duplicate the test, make small changes, and assign versions to different students. Makes a copied question bank less useful.</p></div>
+      <div><h3>Avoid “Instantly” on tests</h3><p>Return scores: Instantly lets students check auto‑graded answers mid‑test. Save it for practice.</p></div>
+      <div><h3>Preview as student</h3><p>In the Assign window, use Preview as student to confirm your settings behave the way you expect before assigning.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>In‑class review, step by step</h2>
+    <p class="section-intro">For when you want students to go over the test with you but not take it home. Because settings are per class, opening it for one section doesn’t open it for the others.</p>
+    <ol class="playbook">
+      <li><strong>Assign with <em>After submission: Make hidden</em>.</strong><span>Set Return scores to <em>After student submits</em> or <em>When closed</em>. Students see a score but can’t open the test.</span></li>
+      <li><strong>Close the activity once make‑ups are done.</strong><span>This stops new responses. With <em>Make hidden</em> still on, the content stays locked.</span></li>
+      <li><strong>At the start of the review, open that section only.</strong><span>Change After submission to <em>Keep visible (no edits allowed)</em> and Return correct answers to <em>When closed</em>. Select Update.</span></li>
+      <li><strong>Review with phones away.</strong><span>Nothing in Formative can block screenshots or phone photos during this window, and students can open it on any device.</span></li>
+      <li><strong>Before the bell, lock it again.</strong><span>Change After submission back to <em>Make hidden</em> and select Update. Correct answers switch off automatically. Repeat steps 3–5 for each section.</span></li>
+    </ol>
+    <div class="warn" style="max-width:760px"><strong>Most secure alternative:</strong> skip steps 3–5 and lead the review from your own screen. Project the questions from your teacher view (hide student names) while students look at their score. No access is ever opened.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Sources:</strong> Formative Help Center articles (checked November 2026) and a reply from Formative Support confirming that the entry password is disabled after submission and that the Secure Exam Browser does not override visibility settings.</p>
+    <ul>
+      <li><a href="https://help.formative.com/en/articles/6198528-additional-assign-settings" target="_blank" rel="noopener">Additional assign settings</a></li>
+      <li><a href="https://help.formative.com/en/articles/262986-close-an-activity" target="_blank" rel="noopener">Close an activity</a></li>
+      <li><a href="https://help.formative.com/en/articles/6060533-lockdown-browser-powered-by-respondus-school-district-license-add-on" target="_blank" rel="noopener">LockDown Browser powered by Respondus</a></li>
+      <li><a href="https://help.formative.com/en/articles/15499566-check-answer-and-check-answer-limits" target="_blank" rel="noopener">Check answer and check answer limits</a></li>
+      <li><a href="https://help.formative.com/en/articles/4306151-tips-for-making-assessments-secure-and-successful" target="_blank" rel="noopener">Tips for making assessments secure</a></li>
+    </ul>
+    <p>Formative updates its settings often. If something here doesn’t match what you see, test with Preview as student and let the Instructional Coach know.</p>
+  </div>
+</footer>
+
+<script>
+const EYE='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.5 10.5 0 0 1 12 19c-7 0-11-7-11-7a19 19 0 0 1 5.1-5.9M9.9 5.2A9.6 9.6 0 0 1 12 5c7 0 11 7 11 7a19 19 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2"/><path d="M1 1l22 22"/></svg>';
+
+const S = {
+  full:{
+    title:"Students review everything on their own",
+    short:"Test, score and answer key, any time",
+    see:[1,1,1,1], sec:1, secLabel:"Low",
+    rows:[["After submission","Keep visible (no edits allowed)"],["Return scores","When closed","or After student submits"],["Return correct answers","When closed","or After student submits"]],
+    notes:["Students can open the test from home and screenshot or copy every question. Use only for quizzes you don’t mind circulating.","<em>After student submits</em> hands the answer key to early finishers while others may still be testing. <em>When closed</em> waits until you close it."],
+    reopen:"Yes, any time"
+  },
+  noKey:{
+    title:"Students see the test and their score, but not the answer key",
+    short:"Test and score, no key",
+    see:[1,1,1,0], sec:2, secLabel:"Low to moderate",
+    rows:[["After submission","Keep visible (no edits allowed)"],["Return scores","When closed","or After student submits"],["Return correct answers","Don’t show answers"]],
+    notes:["The questions and the student’s own responses are still open from any device, so the test can still be copied.","With scores returned, students may be able to tell which questions they missed."],
+    reopen:"Yes, any time"
+  },
+  noScore:{
+    title:"Students can reopen the test, but see no score or answers",
+    short:"Test only, nothing returned",
+    see:[1,1,0,0], sec:2, secLabel:"Low to moderate",
+    rows:[["After submission","Keep visible (no edits allowed)"],["Return scores","Don’t show scores"],["Return correct answers","Don’t show answers"]],
+    notes:["Useful while you’re still grading free‑response items.","The questions stay visible while the activity is open.","Once you close it, it disappears from student dashboards because nothing is set to return."],
+    reopen:"Yes, until you close it"
+  },
+  scoreOnly:{
+    title:"Students see their score; the test stays locked",
+    badge:"Recommended for most tests",
+    short:"Score only",
+    see:[0,0,1,0], sec:3, secLabel:"High",
+    rows:[["After submission","Make hidden"],["Return scores","After student submits","or When closed, if you still have items to grade"],["Return correct answers","Not available with Make hidden",null,true]],
+    notes:["The test tile stays on the student dashboard with the score, but students can’t open the content.","This is the fix for students getting back in after submitting. That happens when After submission is set to Keep visible."],
+    reopen:"No"
+  },
+  nothing:{
+    title:"Students see nothing yet",
+    short:"Fully locked",
+    see:[0,0,0,0], sec:4, secLabel:"Highest",
+    rows:[["After submission","Make hidden"],["Return scores","Don’t show scores"],["Return correct answers","Not available with Make hidden",null,true],["Optional: Open / Closed","Closed","Removes it from student dashboards entirely"]],
+    notes:["Formative’s own recommended post‑test setting: lock it down, finish grading, then update the settings to release scores.","You can switch to the score‑only settings any time to release grades."],
+    reopen:"No"
+  },
+  review:{
+    title:"Students review the test only in class",
+    badge:"Two ways to do it",
+    short:"Locked, opened briefly for review",
+    see:[0,0,1,0], sec:3, secLabel:"High, except during an open review window",
+    rows:[["After submission","Make hidden","Day to day"],["Return scores","After student submits","or When closed"],["Return correct answers","Not available with Make hidden",null,true]],
+    review:true,
+    reopen:"Only while you open it"
+  }
+};
+const ORDER=["full","noKey","noScore","scoreOnly","nothing","review"];
+
+const T = {
+  start:{q:"After students submit, should they be able to reopen the test and see the questions?",opts:[["Yes, any time","openScore"],["Only during an in‑class review","review"],["No","lockedScore"]]},
+  openScore:{q:"Should they see their score?",opts:[["Yes","key"],["Not yet","noScore"]]},
+  key:{q:"Should they see the correct answers?",opts:[["Yes","full"],["No","noKey"]]},
+  lockedScore:{q:"Should they see their score?",opts:[["Yes","scoreOnly"],["Not yet","nothing"]]}
+};
+const ROUTES={full:[0,0,0],noKey:[0,0,1],noScore:[0,1],scoreOnly:[2,0],nothing:[2,1],review:[1]};
+
+let path=[]; // indexes chosen
+
+function walk(){
+  let node="start"; const hist=[];
+  for(const i of path){ const n=T[node]; hist.push({node,i}); node=n.opts[i][1]; }
+  return {hist,node};
+}
+
+function render(){
+  const {hist,node}=walk();
+  const steps=document.getElementById('steps');
+  let h='';
+  hist.forEach((s,k)=>{
+    const n=T[s.node];
+    h+=`<button class="answered" data-back="${k}"><span><span class="q">${n.q}</span><span class="a">${n.opts[s.i][0]}</span></span><span class="chg">Change</span></button>`;
+  });
+  if(T[node]){
+    const n=T[node];
+    h+=`<div class="current"><div class="q">${n.q}</div><div class="opts">${n.opts.map((o,i)=>`<button class="opt" data-pick="${i}">${o[0]}</button>`).join('')}</div></div>`;
+  }
+  if(path.length) h+=`<button class="restart" id="restart">Start over</button>`;
+  steps.innerHTML=h;
+  steps.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{path.push(+b.dataset.pick);render();});
+  steps.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>{path=path.slice(0,+b.dataset.back);render();});
+  const r=document.getElementById('restart'); if(r) r.onclick=()=>{path=[];render();};
+  renderResult(S[node]?node:null);
+}
+
+function renderResult(key){
+  const el=document.getElementById('result');
+  if(!key){el.className='result empty';el.innerHTML='Your settings will appear here once you’ve answered the questions.';return;}
+  const s=S[key]; el.className='result';
+  const labels=["Questions","Their answers","Score","Answer key"];
+  const vis=labels.map((l,i)=>`<div class="${s.see[i]?'on':'off'}">${s.see[i]?EYE:EYE_OFF}${l}<b>${s.see[i]?'Visible':'Hidden'}</b></div>`).join('');
+  const bars=[1,2,3,4].map(i=>`<i class="${i<=s.sec?'f':''}"></i>`).join('');
+  const rows=s.rows.map(r=>`<div class="row"><span class="lbl">${r[0]}</span><span class="right"><span class="val${r[3]?' na':''}">${r[1]}</span>${r[2]?`<span class="alt">${r[2]}</span>`:''}</span></div>`).join('');
+  let extra='';
+  if(s.review){
+    extra=`<div class="sublabel">Then choose how to review</div>
+    <div class="option-block"><h4>Option A: Teacher‑led review (most secure)</h4><p style="margin:0;font-size:.92rem">Change nothing. Project the questions from your teacher view with student names hidden, and walk through them while students look at their score.</p></div>
+    <div class="option-block"><h4>Option B: Open a review window for one section</h4><ol>
+      <li>At the start of class: After submission → <strong>Keep visible (no edits allowed)</strong>; Return correct answers → <strong>When closed</strong> (close the activity first). Select Update.</li>
+      <li>Review together, phones away.</li>
+      <li>Before the bell: After submission → <strong>Make hidden</strong>. Select Update. Repeat for each section.</li></ol></div>
+    <div class="warn"><strong>During an open window</strong>, students can reach the test on any device, anywhere, and nothing in Formative blocks screenshots or phone photos. The Secure Exam Browser doesn’t apply after submission. If you forget to switch back, access stays open.</div>`;
+  }
+  el.innerHTML=`<div class="result-head">${s.badge?`<span class="badge">${s.badge}</span>`:''}<h3>${s.title}</h3></div>
+  <div class="result-body">
+    <div class="sublabel">What students can see after submitting</div><div class="vis">${vis}</div>
+    <div class="sublabel">Test security</div><div class="meter"><div class="bars">${bars}</div><span>${s.secLabel}</span></div>
+    <div class="sublabel">Set these in the Assign window</div>
+    <div class="panel"><div class="panel-title">Grading and feedback</div>${rows}</div>
+    ${extra}
+    ${s.notes?`<div class="sublabel">Good to know</div><ul class="notes">${s.notes.map(n=>`<li>${n}</li>`).join('')}</ul>`:''}
+  </div>`;
+}
+
+// table
+const tb=document.getElementById('tbody');
+tb.innerHTML=ORDER.map(k=>{
+  const s=S[k]; const g=(i)=>s.rows[i]?s.rows[i][1]+(s.rows[i][2]&&!s.rows[i][3]&&s.rows[i][0]!=="After submission"?`<span class="sm">${s.rows[i][2]}</span>`:''):'';
+  const re=s.reopen.startsWith('No')?'no':'yes';
+  return `<tr tabindex="0" data-s="${k}"><td class="scn">${s.title}<span class="sm">${s.short}</span></td><td>${g(0)}${k==='review'?'<span class="sm">Keep visible only during review</span>':''}</td><td>${g(1)}</td><td>${s.rows[2][3]?'<span class="sm">Not available</span>':g(2)}</td><td class="${re}">${s.reopen}</td><td>${s.secLabel}</td></tr>`;
+}).join('');
+tb.querySelectorAll('tr').forEach(tr=>{
+  const go=()=>{path=ROUTES[tr.dataset.s].slice();render();document.getElementById('finder').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};
+  tr.onclick=go; tr.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};
+});
+
+// myths
+const M=[
+  ["The entry password keeps the test locked after students take it.","The password only controls getting in to start. Once a student submits, it no longer applies to them. Use After submission: Make hidden to keep them out."],
+  ["The Secure Exam Browser protects the test when we review it.","It only locks the device while a student is taking the test, until they submit (or you enter the quit password). It doesn’t change what students can see afterward, and it can’t block screenshots or phone photos outside of the test session."],
+  ["Closing the activity hides it from students.","Closing only stops new responses. If scores or correct answers are set to return at any point, it stays on the dashboard. It disappears only when both are set to don’t show."],
+  ["“Don’t show answers” keeps students from seeing the questions.","With Keep visible, students can still open the questions and their own responses. Only Make hidden locks the content."],
+  ["Make hidden also hides the score.","Students can still get their score with Make hidden. They just can’t open the test. Correct answers can’t be returned with Make hidden."],
+  ["Return scores “Instantly” means they get the score when they finish.","Instantly turns on Check answer for auto‑graded questions during the test. For a score at the end, choose After student submits or When closed."],
+  ["Once assigned, my settings are set for good, for every section.","Settings are per class section, and you can update them at any time. Changes take effect right away. You can also save your preferred defaults in your Formative account settings."],
+  ["I can reopen a closed test for a make‑up without affecting anyone else.","Reopening hides any scores and answers set to “When closed” from everyone until you close it again. For make‑ups, the score‑only settings with After student submits avoid this."]
+];
+document.getElementById('myths').innerHTML=M.map(m=>`<div class="myth"><div class="m"><span class="tag myth-t">Myth</span><s>${m[0]}</s></div><div class="f"><span class="tag fact-t">Fact</span><span>${m[1]}</span></div></div>`).join('');
+
+render();
+</script>
+</body>
+</html>
